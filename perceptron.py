@@ -1,46 +1,55 @@
-def dot(vec1, vec2):
-    sum = 0
-    for x, y in zip(vec1, vec2):
-        sum += x*y
-
-    return sum
+from smol_vec import Vector
+import random
 
 
 def threshold(v):
     return float(v >= 0)
 
 
-def output(feat_vec, weights):
-    return threshold(dot(feat_vec, weights))
-
-
-def update(feat_vec, weights, learn_rate, error):
-    new_weights = []
-    for x, w in zip(feat_vec, weights):
-        delta_w = learn_rate * error * x
-        new_weights.append(w + delta_w)
-
-    return new_weights
-
-
 class Perceptron:
-    def __init__(self):
-        self.weights = []
-        self.bias = 0
+    def __init__(self, input_size, seed=0):
+        self.weights = Vector(input_size)
 
-    def train(self, feat1, feat2, labels, weights, bias, learn_rate, epoch):
-        self.weights = weights
-        self.bias = bias
+        # random weights and bias
+        if seed != 0:
+            random.seed(seed)
+        self.weights.rand_fill(-1, 1)
+        self.bias = random.randint(-1, 1)
 
-        for e in range(epoch):
-            print("Epoch:", e)
+        self.learning_rate = 0.1
 
-            for x1, x2, y in zip(feat1, feat2, labels):
-                feat_vec = [x1, x2, bias]
-                error = y - output(feat_vec, weights)
+    def output(self, inputs):
+        inputs = Vector.from_array(inputs)
+        return threshold(Vector.dot(self.weights, inputs) + self.bias)
 
-                print(x1, x2, bias, y, self.weights, error)
+    def update(self, inputs, error):
+        if error == 0:
+            return
 
-                if error <= 0:
-                    self.weights = update(
-                        feat_vec, self.weights, learn_rate, error)
+        def calc_deltas(x): return self.learning_rate * error * x
+
+        inputs = Vector.from_array(inputs)
+        weights_deltas = Vector.static_map(calc_deltas, inputs)
+        self.weights.add(weights_deltas)
+        self.bias += calc_deltas(self.learning_rate)
+
+    def train(self, x, y, epoch, learning_rate=0.1,  weights=[], bias=None):
+        self.learning_rate = learning_rate
+        if len(weights) != 0:
+            self.weights = weights
+        if bias is not None:
+            self.bias = bias
+
+        train_data = list(zip(x, y))
+        for _ in range(epoch):
+            random.shuffle(train_data)
+            for features, target in train_data:
+                error = target - self.output(features)
+                self.update(features, error)
+
+    def predict(self, inputs):
+        preds = []
+        for x in inputs:
+            preds.append(self.output(x))
+
+        return preds

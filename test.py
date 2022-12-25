@@ -1,4 +1,19 @@
+from perceptron import OldPerceptron
 from perceptron import Perceptron
+
+
+def new_perceptron():
+    # AND data
+    train_features = [[0, 0], [0, 1], [1, 0], [1, 1]]
+    train_targets = [0, 1, 1, 1]
+
+    cls = Perceptron(2, 2)
+    cls.train(train_features, train_targets, 5000)
+    preds = cls.predict(train_features)
+    print(preds)
+
+
+new_perceptron()
 
 
 def diabetic():
@@ -10,7 +25,7 @@ def diabetic():
     learn_rate = 0.1
     epoch = 3
 
-    cls = Perceptron()
+    cls = OldPerceptron()
     cls.train(glucose, bmi, diabetic, weights, bias, learn_rate, epoch)
 
 
@@ -23,18 +38,5 @@ def demo():
     learn_rate = 0.01
     epoch = 2
 
-    cls = Perceptron()
+    cls = OldPerceptron()
     cls.train(x1, x2, labels, weights, bias, learn_rate, epoch)
-
-
-def main():
-    choice = True
-
-    if not choice:
-        demo()
-    else:
-        diabetic()
-
-
-if __name__ == "__main__":
-    main()
