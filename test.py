@@ -1,11 +1,11 @@
-from perceptron import OldPerceptron
+from old_preceptron import OldPerceptron
 from perceptron import Perceptron
 
 
 def new_perceptron():
     # AND data
     train_features = [[0, 0], [0, 1], [1, 0], [1, 1]]
-    train_targets = [0, 1, 1, 1]
+    train_targets = [0, 0, 0, 1]
 
     cls = Perceptron(2, 2)
     cls.train(train_features, train_targets, 5000)

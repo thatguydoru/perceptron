@@ -48,8 +48,4 @@ class Perceptron:
                 self.update(features, error)
 
     def predict(self, inputs):
-        preds = []
-        for x in inputs:
-            preds.append(self.output(x))
-
-        return preds
+        return [self.output(x) for x in inputs]
